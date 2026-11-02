@@ -3522,4 +3522,25 @@ function install(){
  });
 }
 new MutationObserver(install).observe(document.body,{childList:true,subtree:true}); install();
-})();</script></body></html>
+})();</script>
+<style id="v1112-mobile-parc-stock-fix">
+@media(max-width:850px){
+ .v1028layout{display:flex!important;flex-direction:column!important;gap:10px!important}
+ .v1028layout>section{display:contents!important}
+ .v1028cards{order:1!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+ .v1028offers{order:3!important}
+ .v1028detail{order:2!important;position:relative!important;top:auto!important;max-height:none!important;overflow:visible!important;margin:0!important}
+ .v1028card{min-width:0!important}
+ .v1028card .v1028photo{height:82px!important}
+ .v1028detail .v1028photo{height:118px!important}
+ .v1028ct{padding:7px 8px!important}.v1028state{font-size:.62rem!important;padding:5px 8px!important}
+ .v1028meta{padding:7px 8px!important;font-size:.68rem!important}
+}
+@media(max-width:430px){.v1028card .v1028photo{height:70px!important}.v1028detail .v1028photo{height:105px!important}}
+</style>
+<script id="v1112-mobile-stock-scroll-fix">(()=>{'use strict';
+let stockScrollX=0;
+document.addEventListener('pointerdown',e=>{const x=e.target.closest('[data-chg="auto"]');if(!x)return;const w=x.closest('.tablewrap');if(w)stockScrollX=w.scrollLeft;},true);
+document.addEventListener('change',e=>{const x=e.target.closest('[data-chg="auto"]');if(!x)return;requestAnimationFrame(()=>{const w=document.querySelector('.tablewrap');if(w)w.scrollLeft=stockScrollX;});},true);
+})();</script>
+</body></html>
