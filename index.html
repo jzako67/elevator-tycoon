@@ -3523,24 +3523,60 @@ function install(){
 }
 new MutationObserver(install).observe(document.body,{childList:true,subtree:true}); install();
 })();</script>
-<style id="v1112-mobile-parc-stock-fix">
+<style id="v1113-mobile-parc-stock-fix">
 @media(max-width:850px){
- .v1028layout{display:flex!important;flex-direction:column!important;gap:10px!important}
- .v1028layout>section{display:contents!important}
- .v1028cards{order:1!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
- .v1028offers{order:3!important}
- .v1028detail{order:2!important;position:relative!important;top:auto!important;max-height:none!important;overflow:visible!important;margin:0!important}
- .v1028card{min-width:0!important}
- .v1028card .v1028photo{height:82px!important}
- .v1028detail .v1028photo{height:118px!important}
- .v1028ct{padding:7px 8px!important}.v1028state{font-size:.62rem!important;padding:5px 8px!important}
- .v1028meta{padding:7px 8px!important;font-size:.68rem!important}
+  /* PARC mobile: compact elevator cards. */
+  .v1028cards{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}
+  .v1028card{min-width:0!important;border-radius:8px!important}
+  .v1028card .v1028photo{height:68px!important;min-height:0!important}
+  .v1028card .v1028ct{padding:6px 7px!important}
+  .v1028card .v1028meta{padding:5px 7px!important;font-size:.64rem!important}
+  .v1028card .v1028state{font-size:.58rem!important;padding:4px 6px!important}
+  .v1028detail.mobile-inline-detail{grid-column:1/-1!important;position:relative!important;top:auto!important;margin:2px 0 5px!important;max-height:none!important;overflow:visible!important}
+  .v1028detail.mobile-inline-detail .v1028photo{height:105px!important;min-height:0!important}
+  /* STOCK mobile: prevent page jumping horizontally. */
+  body.mobile-stock-active{overflow-x:hidden!important}
+  body.mobile-stock-active #main{overflow-x:hidden!important;max-width:100%!important}
+  body.mobile-stock-active #main>.tablewrap{max-width:100%!important;overscroll-behavior-x:contain!important;scroll-behavior:auto!important}
 }
-@media(max-width:430px){.v1028card .v1028photo{height:70px!important}.v1028detail .v1028photo{height:105px!important}}
 </style>
-<script id="v1112-mobile-stock-scroll-fix">(()=>{'use strict';
-let stockScrollX=0;
-document.addEventListener('pointerdown',e=>{const x=e.target.closest('[data-chg="auto"]');if(!x)return;const w=x.closest('.tablewrap');if(w)stockScrollX=w.scrollLeft;},true);
-document.addEventListener('change',e=>{const x=e.target.closest('[data-chg="auto"]');if(!x)return;requestAnimationFrame(()=>{const w=document.querySelector('.tablewrap');if(w)w.scrollLeft=stockScrollX;});},true);
+<script id="v1113-mobile-parc-stock-runtime">(()=>{'use strict';
+const mobile=()=>matchMedia('(max-width:850px)').matches;
+let lastStockX=0;
+function fixParc(){
+  if(!mobile()) return;
+  const cards=document.querySelector('.v1028cards');
+  const detail=document.querySelector('.v1028layout > .v1028detail, .v1028detail.mobile-inline-detail');
+  const selected=cards&&cards.querySelector('.v1028card.sel');
+  if(cards&&detail&&selected){
+    detail.classList.add('mobile-inline-detail');
+    if(selected.nextElementSibling!==detail) selected.insertAdjacentElement('afterend',detail);
+  }
+}
+function fixStock(){
+  if(!mobile()) return;
+  const stock=document.querySelector('h1.screen');
+  const active=stock&&/Atelier Stock/i.test(stock.textContent||'');
+  document.body.classList.toggle('mobile-stock-active',!!active);
+  if(!active) return;
+  const wrap=document.querySelector('#main > .tablewrap');
+  if(wrap && lastStockX>0 && Math.abs(wrap.scrollLeft-lastStockX)>2) wrap.scrollLeft=lastStockX;
+}
+function fix(){fixParc();fixStock();}
+document.addEventListener('pointerdown',e=>{
+  const auto=e.target.closest('[data-chg="auto"]'); if(!auto||!mobile()) return;
+  const wrap=auto.closest('.tablewrap'); if(wrap) lastStockX=wrap.scrollLeft;
+},true);
+document.addEventListener('change',e=>{
+  const auto=e.target.closest('[data-chg="auto"]'); if(!auto||!mobile()) return;
+  const wrap=auto.closest('.tablewrap'); if(wrap) lastStockX=wrap.scrollLeft;
+  const restore=()=>{const w=document.querySelector('#main > .tablewrap');if(w){w.scrollLeft=lastStockX;window.scrollTo({left:0,top:window.scrollY,behavior:'instant'});}};
+  restore(); requestAnimationFrame(()=>{restore();requestAnimationFrame(restore)}); setTimeout(restore,50);
+},true);
+document.addEventListener('click',e=>{
+  if(mobile()&&e.target.closest('.v1028card')) requestAnimationFrame(()=>requestAnimationFrame(fixParc));
+},true);
+new MutationObserver(()=>requestAnimationFrame(fix)).observe(document.getElementById('main')||document.body,{childList:true,subtree:true});
+addEventListener('resize',fix,{passive:true}); requestAnimationFrame(fix);
 })();</script>
 </body></html>
